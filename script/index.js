@@ -218,26 +218,20 @@ function dayfour()
             {
                 lines.forEach(line => {
                     const num = listToNum(line);
-
                     if( (num[0][0] <= num[1][0] && num[0][1] >= num[1][1]) 
                     ||  (num[0][0] >= num[1][0] && num[0][1] <= num[1][1]))
                         total++;
                 })
-
             }
             break;
         case '1':
             {
                 lines.forEach(line => {
                     const num = listToNum(line);
-                    
                     let max = num[0][0] > num[1][0] ? num[0][0] : num[1][0];
                     let min = num[0][1] < num[1][1] ? num[0][1] : num[1][1];
-                       
-
-                    if(max <= min)
+                    if(min >= max)
                     {
-                        console.log(line)
                         total++;
                     } 
                 })
@@ -248,4 +242,195 @@ function dayfour()
 
     document.getElementById("AnswerFour").value = total.toString();
 
+}
+
+function dayfive()
+{
+    let {lines, option} = getLines("DayFive");
+    let total = "";
+    
+    let status = 0;
+    let     blocks = [];
+    const   moves = [];
+    for (const ln of lines) 
+    {
+        if(ln == "")
+        {
+            status++
+            continue;
+        }
+        switch(status){
+            case 0:
+                let ch = ln.split('');
+                let count = 0;
+                let bk = [];
+                for(let chr of ch)
+                {
+        
+                    if(parseInt(chr) > 0)
+                    {
+                        bk.push(parseInt(chr));
+                        count = 0;
+                        continue;
+                    }
+        
+                    if(chr == ' ' && count == 3)
+                    {
+                        bk.push('0');
+                        count = 0;
+                        continue;
+                    }
+                    
+                    if(chr != ' ' && chr != '[' && chr != ']' )
+                    {
+                        bk.push(chr);
+                        count = 0;
+                    }
+                    
+                    count++;
+                }
+                blocks.push(bk);
+
+                continue;
+            case 1:
+                moves.push(ln);
+                continue;
+            default:
+                break;
+        }
+    }
+
+    console.log(blocks);
+    const commands = ["move"];
+    const action = (cmd) =>{
+        if(cmd.includes(commands[0]))
+        {
+            //[CMD][QT][FROM][LC][TO][DEST]
+            //move 1 from 2 to 1
+            console.log(cmd)
+            let qt  = parseInt( cmd.split("move")[1].split("from")[0] );
+            let sc  = parseInt( cmd.split("from")[1].split("to")[0]   );
+            let dst = parseInt( cmd.split("to")[1]                    );
+            let check_qt = 0;
+            let block_move = '0';
+            let sizeBlock = blocks.length-1;
+            while(qt > 0)
+            {
+                sizeBlock = blocks.length-1;
+                // remove one block
+                for(let index = 0; index < sizeBlock; index++)
+                {
+                    //Check has block
+                    if(blocks[index][sc-1] != '0')
+                    {
+                        check_qt++;
+                        block_move = blocks[index][sc-1];
+                        blocks[index][sc-1] = '0';
+                        console.log("[*]bloco " + block_move + " encontrado")
+                        break;
+                    }
+                } 
+
+                //put one block
+                if(block_move != '0')
+                {
+                    for (let index = sizeBlock; index >= 0; index--)
+                    {
+                        if(blocks[index][dst-1] == '0')
+                        {
+                            console.log("[*]posição vazia encontrada");
+                            blocks[index][dst-1] = block_move;
+                            block_move = '0';
+                            qt--;
+                            break;
+                        }
+                    }
+                }
+
+                //add new line to put block
+                if(block_move != '0')
+                {
+                    let new_table = [];
+                    for (let index = 0; index < blocks[0].length; index++) {
+
+                        if(dst-1 == index)
+                        {
+                            new_table.push(block_move);
+                            continue;
+                        }
+                        new_table.push('0');
+                    }
+                    let top_blocks = [];
+                    top_blocks.push(new_table);
+                    blocks = top_blocks.concat(blocks);
+                    console.log('[+]Nova table adicionada');
+                    block_move = '0';
+                    qt--;
+                }
+            }
+
+            console.log(blocks);
+            //return [parseInt(qt), parseInt(sc), parseInt(dst)]
+        }
+    }
+
+    for (const cmd of moves) 
+    {
+        action(cmd);
+    }
+
+
+
+}
+
+function daysix()
+{
+    let {lines, option} = getLines("DaySix");
+    lines += "";
+    lines = lines.split('');
+    let total = 0
+    const getMarkStart = (lines, value) =>
+    {
+        let total = 0;
+        let know = [];
+        for(let i = 0; i < lines.length ; i++)
+        {
+            if(know.includes(lines[i]))
+            {
+                i -= (know.length-1);
+                know = [];
+                continue;
+            }
+            know.push(lines[i]);
+            if(know.length >= value)
+            {
+                total = i+1;
+                break;
+            }
+        }
+        return total;
+    }
+
+
+    switch(option)
+    {
+        case '0':
+            {
+               total = getMarkStart(lines, 4);
+            
+            }
+            break;
+
+        case '1':
+            {
+                total = getMarkStart(lines, 14);
+
+            }
+            break;
+        default:
+            break;
+    }
+
+
+    document.getElementById("AnswerSix").value = total.toString();
 }
