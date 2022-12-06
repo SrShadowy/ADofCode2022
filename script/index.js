@@ -230,14 +230,13 @@ function dayfour()
             {
                 lines.forEach(line => {
                     const num = listToNum(line);
-                    const list = [];
-                    for(let i = num[0][0]; i <= num[0][1]; i++)
-                        list.push(i);
                     
+                    let max = num[0][0] > num[1][0] ? num[0][0] : num[1][0];
+                    let min = num[0][1] < num[1][1] ? num[0][1] : num[1][1];
                        
-                    if(list.includes(num[1][0]) || list.includes(num[1][1]))
+
+                    if(max <= min)
                     {
-                        console.log(list)
                         console.log(line)
                         total++;
                     } 
